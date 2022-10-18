@@ -1,10 +1,11 @@
-package main
+package yt_downloader
 
 import (
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -52,6 +53,15 @@ func yt(w http.ResponseWriter, r *http.Request) {
 			//if err != nil {
 			//	fmt.Println(err)
 			//}
+			var yt_path string = "/tmp/yt_downloader"
+			var err error
+
+			err = os.RemoveAll(yt_path)
+			check(err)
+			err = os.Mkdir(yt_path, 0755)
+			check(err)
+			err = os.Chdir(yt_path)
+			check(err)
 
 			// process file
 
@@ -70,6 +80,15 @@ func yt(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "%s\n", out)
 			// process file
 
+			// list directory
+			c, err := os.ReadDir(yt_path)
+			check(err)
+
+			fmt.Println("Listing ", yt_path, " directory")
+			for _, entry := range c {
+				fmt.Println(" ", entry.Name(), entry.IsDir())
+			}
+
 			//defer resp.Body.Close()
 
 			//copy the relevant headers. If you want to preserve the downloaded file name, extract it with go's url parser.
@@ -81,6 +100,12 @@ func yt(w http.ResponseWriter, r *http.Request) {
 			//io.Copy(w, resp.Body)
 
 		}
+	}
+}
+
+func check(e error) {
+	if e != nil {
+		panic(e)
 	}
 }
 
