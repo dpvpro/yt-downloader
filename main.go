@@ -86,20 +86,6 @@ func process(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Println("Processing ", key, value)
 
-		//timeout := time.Duration(5) * time.Second
-		//transport := &http.Transport{
-		//	ResponseHeaderTimeout: timeout,
-		//	DisableKeepAlives:     true,
-		//}
-		//client := &http.Client{
-		//	Transport: transport,
-		//}
-
-		//resp, err := client.Get(value)
-		//if err != nil {
-		//	fmt.Println(err)
-		//}
-
 		// process file
 
 		//yt-dlp -x --audio-format mp3 --audio-quality 0 https://youtu.be/BS5N_lAIohQ
@@ -115,19 +101,6 @@ func process(w http.ResponseWriter, r *http.Request) {
 
 		}
 		fmt.Printf("%s\n", out)
-
-		//fmt.Fprintf(w, "%s\n", out)
-		// process file
-
-		//defer resp.Body.Close()
-
-		//copy the relevant headers. If you want to preserve the downloaded file name, extract it with go's url parser.
-		//w.Header().Set("Content-Disposition", "attachment")
-		//w.Header().Set("Content-Type", r.Header.Get("Content-Type"))
-		//w.Header().Set("Content-Length", r.Header.Get("Content-Length"))
-
-		//stream the body to the client without fully loading it into memory
-		//io.Copy(w, resp.Body)
 
 	}
 
@@ -178,18 +151,3 @@ func main() {
 		log.Fatal("ListenAndServe: ", err)
 	}
 }
-
-//// create file server handler
-//fs := http.FileServer( http.Dir( "/Users/Uday.Hiwarale/tmp" ) )
-//
-//// handle `/` route
-//http.HandleFunc( "/", func( res http.ResponseWriter, req *http.Request ) {
-//	res.Header().Set( "Content-Type", "text/html" );
-//	fmt.Fprint( res, "<h1>Golang!</h1>" )
-//} )
-//
-//// handle `/static` route
-//http.Handle( "/static", fs )
-//
-//// start HTTP server with `http.DefaultServeMux` handler
-//log.Fatal(http.ListenAndServe( ":9000", nil ))
