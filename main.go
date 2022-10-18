@@ -10,6 +10,10 @@ import (
 	"strings"
 )
 
+var (
+	yt_path string = "/tmp/yt_downloader"
+)
+
 func sayhelloName(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() //Parse url parameters passed, then parse the response packet for the POST body (request body)
 	// attention: If you do not call ParseForm method, the following data can not be obtained form
@@ -53,7 +57,6 @@ func yt(w http.ResponseWriter, r *http.Request) {
 			//if err != nil {
 			//	fmt.Println(err)
 			//}
-			var yt_path string = "/tmp/yt_downloader"
 			var err error
 
 			err = os.RemoveAll(yt_path)
@@ -88,9 +91,6 @@ func yt(w http.ResponseWriter, r *http.Request) {
 				fmt.Println(" ", entry.Name(), entry.IsDir())
 			}
 
-			// create file server handler
-			http.FileServer(http.Dir(yt_path))
-
 			//defer resp.Body.Close()
 
 			//copy the relevant headers. If you want to preserve the downloaded file name, extract it with go's url parser.
@@ -105,6 +105,11 @@ func yt(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func serve(w http.ResponseWriter, r *http.Request) {
+	// create file server handler
+	http.FileServer(http.Dir(yt_path))
+}
+
 func check(e error) {
 	if e != nil {
 		panic(e)
@@ -114,7 +119,7 @@ func check(e error) {
 func main() {
 	http.HandleFunc("/hello", sayhelloName) // setting router rule
 	http.HandleFunc("/yt", yt)
-	//http.HandleFunc("/serve", serve)
+	http.HandleFunc("/serve", serve)
 	err := http.ListenAndServe(":10542", nil) // setting listening port
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
