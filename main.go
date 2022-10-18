@@ -12,7 +12,7 @@ import (
 
 var (
 	yt_path string = "/tmp/yt_downloader"
-	site    string = "http://daybydayz.ru:10542/files/"
+	site    string = "http://daybydayz.ru:10542/files"
 )
 
 func sayhelloName(w http.ResponseWriter, r *http.Request) {
@@ -131,11 +131,11 @@ func main() {
 	mux := http.NewServeMux()
 
 	fileServer := http.FileServer(http.Dir(yt_path))
-	mux.Handle("/files/", http.StripPrefix("/files", fileServer))
+	mux.Handle("/files", http.StripPrefix("/files", fileServer))
 
-	mux.HandleFunc("/hello/", sayhelloName) // setting router rule
-	mux.HandleFunc("/yt/", yt)
-	mux.HandleFunc("/serve/", serve)
+	mux.HandleFunc("/hello", sayhelloName) // setting router rule
+	mux.HandleFunc("/yt", yt)
+	mux.HandleFunc("/serve", serve)
 
 	err := http.ListenAndServe(":10542", mux) // setting listening port
 	if err != nil {
