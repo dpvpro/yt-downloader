@@ -81,13 +81,15 @@ func yt(w http.ResponseWriter, r *http.Request) {
 			// process file
 
 			// list directory
+			fmt.Println("Listing ", yt_path, " directory")
 			c, err := os.ReadDir(yt_path)
 			check(err)
-
-			fmt.Println("Listing ", yt_path, " directory")
 			for _, entry := range c {
 				fmt.Println(" ", entry.Name(), entry.IsDir())
 			}
+
+			// create file server handler
+			http.FileServer(http.Dir(yt_path))
 
 			//defer resp.Body.Close()
 
@@ -112,8 +114,24 @@ func check(e error) {
 func main() {
 	http.HandleFunc("/hello", sayhelloName) // setting router rule
 	http.HandleFunc("/yt", yt)
+	//http.HandleFunc("/serve", serve)
 	err := http.ListenAndServe(":10542", nil) // setting listening port
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
 }
+
+//// create file server handler
+//fs := http.FileServer( http.Dir( "/Users/Uday.Hiwarale/tmp" ) )
+//
+//// handle `/` route
+//http.HandleFunc( "/", func( res http.ResponseWriter, req *http.Request ) {
+//	res.Header().Set( "Content-Type", "text/html" );
+//	fmt.Fprint( res, "<h1>Golang!</h1>" )
+//} )
+//
+//// handle `/static` route
+//http.Handle( "/static", fs )
+//
+//// start HTTP server with `http.DefaultServeMux` handler
+//log.Fatal(http.ListenAndServe( ":9000", nil ))
