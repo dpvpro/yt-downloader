@@ -83,14 +83,6 @@ func yt(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "%s\n", out)
 			// process file
 
-			// list directory
-			fmt.Println("Listing ", yt_path, " directory")
-			c, err := os.ReadDir(yt_path)
-			check(err)
-			for _, entry := range c {
-				fmt.Println(" ", entry.Name(), entry.IsDir())
-			}
-
 			//defer resp.Body.Close()
 
 			//copy the relevant headers. If you want to preserve the downloaded file name, extract it with go's url parser.
@@ -105,22 +97,41 @@ func yt(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func serve(w http.ResponseWriter, r *http.Request) {
-	// create file server handler
-	http.FileServer(http.Dir(yt_path))
-}
-
 func check(e error) {
 	if e != nil {
 		panic(e)
 	}
 }
 
+func serve(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		// list directory
+		fmt.Println("Listing", yt_path, "directory")
+		c, err := os.ReadDir(yt_path)
+		check(err)
+		for _, entry := range c {
+			fmt.Println(" ", entry.Name(), entry.IsDir())
+		}
+
+	}
+}
+
 func main() {
-	http.HandleFunc("/hello", sayhelloName) // setting router rule
-	http.HandleFunc("/yt", yt)
-	http.HandleFunc("/serve", serve)
-	err := http.ListenAndServe(":10542", nil) // setting listening port
+
+	mux := http.NewServeMux()
+
+	fileServer := http.FileServer(http.Dir(yt_path))
+	mux.Handle("/files/", http.StripPrefix("/files", fileServer))
+
+	// create file server handler
+	//fs := http.FileServer(http.Dir(yt_path))
+	//http.Handle("/static/", fs)
+
+	mux.HandleFunc("/hello/", sayhelloName) // setting router rule
+	mux.HandleFunc("/yt/", yt)
+	mux.HandleFunc("/serve/", serve)
+
+	err := http.ListenAndServe(":10542", mux) // setting listening port
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
