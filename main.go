@@ -12,6 +12,7 @@ import (
 
 var (
 	yt_path string = "/tmp/yt_downloader"
+	site    string = "http://daybydayz.ru:10542/files/"
 )
 
 func sayhelloName(w http.ResponseWriter, r *http.Request) {
@@ -30,16 +31,30 @@ func sayhelloName(w http.ResponseWriter, r *http.Request) {
 
 func yt(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("method:", r.Method) //get request method
+
 	if r.Method == "GET" {
 		t, _ := template.ParseFiles("yt.html")
 		t.Execute(w, nil)
-	} else {
+	}
+
+	if r.Method == "POST" {
+
+		var err error
+
+		err = os.RemoveAll(yt_path)
+		check(err)
+		err = os.Mkdir(yt_path, 0755)
+		check(err)
+		err = os.Chdir(yt_path)
+		check(err)
+
 		//r.ParseForm()
 		// logic part of log in
 		var values = r.FormValue("message")
 		fmt.Println("message:", values)
 		//fmt.Println("form:", r.Form)
 		valString := strings.Split(values, "\n")
+
 		for key, value := range valString { // range over []string
 			//fmt.Println(key, value)
 			fmt.Println("Processing ", key, value)
@@ -57,14 +72,6 @@ func yt(w http.ResponseWriter, r *http.Request) {
 			//if err != nil {
 			//	fmt.Println(err)
 			//}
-			var err error
-
-			err = os.RemoveAll(yt_path)
-			check(err)
-			err = os.Mkdir(yt_path, 0755)
-			check(err)
-			err = os.Chdir(yt_path)
-			check(err)
 
 			// process file
 
@@ -104,6 +111,7 @@ func check(e error) {
 }
 
 func serve(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method == "GET" {
 		// list directory
 		fmt.Println("Listing", yt_path, "directory")
@@ -112,6 +120,8 @@ func serve(w http.ResponseWriter, r *http.Request) {
 		for _, entry := range c {
 			fmt.Println(" ", entry.Name(), entry.IsDir())
 		}
+
+		http.Redirect(w, r, site, http.StatusSeeOther)
 
 	}
 }
@@ -122,10 +132,6 @@ func main() {
 
 	fileServer := http.FileServer(http.Dir(yt_path))
 	mux.Handle("/files/", http.StripPrefix("/files", fileServer))
-
-	// create file server handler
-	//fs := http.FileServer(http.Dir(yt_path))
-	//http.Handle("/static/", fs)
 
 	mux.HandleFunc("/hello/", sayhelloName) // setting router rule
 	mux.HandleFunc("/yt/", yt)
