@@ -1,4 +1,4 @@
-package yt_downloader
+package main
 
 import (
 	"fmt"
