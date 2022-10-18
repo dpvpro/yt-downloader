@@ -101,6 +101,16 @@ func yt(w http.ResponseWriter, r *http.Request) {
 			//io.Copy(w, resp.Body)
 
 		}
+		
+		// list directory
+		fmt.Println("Listing", yt_path, "directory")
+		c, err := os.ReadDir(yt_path)
+		check(err)
+		for _, entry := range c {
+			fmt.Println(" ", entry.Name(), entry.IsDir())
+		}
+
+		http.Redirect(w, r, site, http.StatusSeeOther)
 	}
 }
 
