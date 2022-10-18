@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	yt_path string = "/tmp/yt_downloader"
-	files   string = "/files"
+	yt_path string = "/tmp/yt_downloader/"
+	files   string = "/files/"
 )
 
 func check(e error) {
@@ -128,6 +128,7 @@ func process(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(" ", entry.Name(), entry.IsDir())
 	}
 
+	w.Header().Set("Content-Type", "audio/mpeg")
 	http.Redirect(w, r, files, http.StatusSeeOther)
 
 }
@@ -141,6 +142,7 @@ func serve(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(" ", entry.Name(), entry.IsDir())
 	}
 
+	w.Header().Set("Content-Type", "audio/mpeg")
 	http.Redirect(w, r, files, http.StatusSeeOther)
 
 }
@@ -152,10 +154,10 @@ func main() {
 	fileServer := http.FileServer(http.Dir(yt_path))
 	mux.Handle(files, http.StripPrefix(files, fileServer))
 
-	mux.HandleFunc("/hello", sayhelloName) // setting router rule
-	mux.HandleFunc("/yt", yt)
-	mux.HandleFunc("/process", process)
-	mux.HandleFunc("/serve", serve)
+	mux.HandleFunc("/hello/", sayhelloName) // setting router rule
+	mux.HandleFunc("/yt/", yt)
+	mux.HandleFunc("/process/", process)
+	mux.HandleFunc("/serve/", serve)
 
 	err := http.ListenAndServe(":10542", mux) // setting listening port
 	if err != nil {
