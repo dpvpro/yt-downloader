@@ -46,18 +46,41 @@ func sayHelloName(w http.ResponseWriter, r *http.Request) {
 }
 
 func yt(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		fmt.Println("method:", r.Method) //get request method
+		fmt.Println("url:", r.URL)       //get request method
 
-	fmt.Println("method:", r.Method) //get request method
-	fmt.Println("url:", r.URL)       //get request method
+		html, err := template.ParseFiles("yt.html")
+		check(err)
+		err = html.Execute(w, nil)
+		check(err)
+	}
 
-	html, err := template.ParseFiles("yt.html")
-	check(err)
-	err = html.Execute(w, nil)
-	check(err)
+	if r.Method == "POST" {
+		r.ParseForm()
+		// logic part of log in
+		var values = r.FormValue("message")
+		fmt.Println("message:", values)
 
+		valString1 := strings.Split(values, "\r\n")
+		valString2 := removeEmptyStrings(valString1)
+		fmt.Println(valString1)
+		fmt.Println(valString2)
+		//fmt.Println(valString)
+
+		process(valString2)
+
+		//err := process(valString2)
+		//if err != nil {
+		//	fmt.Fprintf(w, "Error: %d", err) // write data to response
+		//}
+
+		http.Redirect(w, r, "/serve/", http.StatusSeeOther)
+
+	}
 }
 
-func process(w http.ResponseWriter, r *http.Request) {
+func process(arr_clips []string) error {
 
 	var err error
 	var pwd string
@@ -71,18 +94,9 @@ func process(w http.ResponseWriter, r *http.Request) {
 	err = os.Chdir(yt_path)
 	check(err)
 
-	r.ParseForm()
-	// logic part of log in
-	var values = r.FormValue("message")
-	fmt.Println("message:", values)
+	defer os.Chdir(pwd)
 
-	valString1 := strings.Split(values, "\r\n")
-	valString2 := removeEmptyStrings(valString1)
-	fmt.Println(valString1)
-	fmt.Println(valString2)
-	//fmt.Println(valString)
-
-	for key, value := range valString2 { // range over []string
+	for key, value := range arr_clips { // range over []string
 
 		fmt.Println("Processing ", key, value)
 
@@ -95,20 +109,16 @@ func process(w http.ResponseWriter, r *http.Request) {
 		//}
 		out, err := cmd.CombinedOutput()
 		if err != nil {
-			//fmt.Fprintf(w, "Error: %d", err) // write data to response
 			fmt.Println("Error: ", err)
-			log.Fatal(err)
-
+			//time.Sleep(5 * time.Second)
+			//log.Fatal(err)
+			return err
 		}
 		fmt.Printf("%s\n", out)
 
 	}
 
-	err = os.Chdir(pwd)
-	check(err)
-
-	http.Redirect(w, r, "/serve/", http.StatusSeeOther)
-
+	return nil
 }
 func serve(w http.ResponseWriter, r *http.Request) {
 
@@ -134,7 +144,7 @@ func main() {
 
 	mux.HandleFunc("/hello/", sayHelloName) // setting router rule
 	mux.HandleFunc("/yt/", yt)
-	mux.HandleFunc("/process/", process)
+	//mux.HandleFunc("/process/", process)
 	mux.HandleFunc("/serve/", serve)
 
 	err := http.ListenAndServe(":10542", mux) // setting listening port
