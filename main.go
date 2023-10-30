@@ -31,7 +31,7 @@ func removeEmptyStrings(s []string) []string {
 	return r
 }
 
-func sayhelloName(w http.ResponseWriter, r *http.Request) {
+func sayHelloName(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm() //Parse url parameters passed, then parse the response packet for the POST body (request body)
 	// attention: If you do not call ParseForm method, the following data can not be obtained form
 	fmt.Println(r.Form) // print information on server side.
@@ -141,7 +141,7 @@ func main() {
 	fileServer := http.FileServer(http.Dir(yt_path))
 	mux.Handle(files, http.StripPrefix(files, fileServer))
 
-	mux.HandleFunc("/hello/", sayhelloName) // setting router rule
+	mux.HandleFunc("/hello/", sayHelloName) // setting router rule
 	mux.HandleFunc("/yt/", yt)
 	mux.HandleFunc("/process/", process)
 	mux.HandleFunc("/serve/", serve)

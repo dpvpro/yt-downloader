@@ -1,0 +1,13 @@
+{
+    "configurations": [
+        {
+            "type": "go",
+            "name": "yt-downloader",
+            "goExecPath": "/usr/bin/go",
+            "buildParams": [
+                "$PROJECT_DIR$/main.go",
+            ],
+//            "runParams":  ["1", "2", "3"]
+        },
+    ]
+}
