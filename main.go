@@ -21,10 +21,11 @@ func check(e error) {
 	}
 }
 
-func removeEmptyStrings(s []string) []string {
+func filterUrlStrings(s []string) []string {
+	// filter empty strings and strings that begins with http or https prefix
 	var r []string
 	for _, str := range s {
-		if str != "" {
+		if str != "" && strings.HasPrefix(str, "http") || strings.HasPrefix(str, "https") {
 			r = append(r, str)
 		}
 	}
@@ -63,7 +64,7 @@ func yt(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("message:", values)
 
 		valString1 := strings.Split(values, "\r\n")
-		valString2 := removeEmptyStrings(valString1)
+		valString2 := filterUrlStrings(valString1)
 		fmt.Println(valString1)
 		fmt.Println(valString2)
 
