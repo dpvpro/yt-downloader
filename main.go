@@ -107,16 +107,7 @@ func process(w http.ResponseWriter, r *http.Request) {
 	err = os.Chdir(pwd)
 	check(err)
 
-	// list directory
-	fmt.Println("Listing", yt_path, "directory")
-	c, err := os.ReadDir(yt_path)
-	check(err)
-	for _, entry := range c {
-		fmt.Println(" ", entry.Name(), entry.IsDir())
-	}
-
-	w.Header().Set("Content-Type", "audio/mpeg")
-	http.Redirect(w, r, files, http.StatusSeeOther)
+	http.Redirect(w, r, "/serve/", http.StatusSeeOther)
 
 }
 func serve(w http.ResponseWriter, r *http.Request) {
