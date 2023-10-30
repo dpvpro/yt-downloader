@@ -66,26 +66,26 @@ func yt(w http.ResponseWriter, r *http.Request) {
 		valString2 := removeEmptyStrings(valString1)
 		fmt.Println(valString1)
 		fmt.Println(valString2)
-		//fmt.Println(valString)
 
-		process(valString2)
+		//process(valString2)
 
-		//err := process(valString2)
-		//if err != nil {
-		//	fmt.Fprintf(w, "Error: %d", err) // write data to response
-		//}
+		item, err := process(valString2)
+		if err != nil {
+			fmt.Fprintf(w, "Ошибка: '%s' со ссылкой: '%s'", err, item) // write data to response
+			return
+		}
 
 		http.Redirect(w, r, "/serve/", http.StatusSeeOther)
 
 	}
 }
 
-func process(arr_clips []string) error {
+func process(arr_clips []string) (item string, error error) {
 
-	var err error
-	var pwd string
+	//var err errors
+	//var pwd string
 
-	pwd, err = os.Getwd()
+	pwd, err := os.Getwd()
 	check(err)
 	err = os.RemoveAll(yt_path)
 	check(err)
@@ -112,13 +112,13 @@ func process(arr_clips []string) error {
 			fmt.Println("Error: ", err)
 			//time.Sleep(5 * time.Second)
 			//log.Fatal(err)
-			return err
+			return value, err
 		}
 		fmt.Printf("%s\n", out)
 
 	}
 
-	return nil
+	return "", nil
 }
 func serve(w http.ResponseWriter, r *http.Request) {
 
