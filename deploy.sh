@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
 git pull --rebase origin main
-go build main.go
+go build .
 pkill main
 nohup ./main &
