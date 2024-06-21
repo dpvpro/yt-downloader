@@ -13,7 +13,6 @@ var (
 	files   string = "/files/"
 )
 
-
 func yt(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		fmt.Println("method:", r.Method) //get request method
@@ -28,15 +27,16 @@ func yt(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		r.ParseForm()
 		// logic part of log in
-		var values = r.FormValue("message")
-		fmt.Println("message:", values)
-
+		var values string = r.FormValue("message")
+		fmt.Println("page message:")
+		fmt.Println(values)
+		fmt.Println(":end page message")
 		valString1 := strings.Split(values, "\r\n")
 		valString2 := filterUrlStrings(valString1)
 		fmt.Println(valString1)
+		fmt.Println("-------")
 		fmt.Println(valString2)
-
-		//process(valString2)
+		fmt.Println("-------")
 
 		item, err := process(valString2)
 		if err != nil {
@@ -48,7 +48,6 @@ func yt(w http.ResponseWriter, r *http.Request) {
 
 	}
 }
-
 
 func main() {
 
