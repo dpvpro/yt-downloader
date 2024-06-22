@@ -58,7 +58,7 @@ func main() {
 
 	mux.HandleFunc("/hello/", sayHelloName) // setting router rule
 	mux.HandleFunc("/yt/", yt)
-	//mux.HandleFunc("/process/", process)
+	// mux.HandleFunc("/process/", process)
 	mux.HandleFunc("/serve/", serve)
 
 	err := http.ListenAndServe(":10542", mux) // setting listening port
