@@ -27,9 +27,6 @@ func filterUrlStrings(s []string) []string {
 
 func process(arr_clips []string) (item string, error error) {
 
-	//var err errors
-	//var pwd string
-
 	pwd, err := os.Getwd()
 	check(err)
 	err = os.RemoveAll(yt_path)

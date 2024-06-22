@@ -31,14 +31,14 @@ func yt(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("page message:")
 		fmt.Println(values)
 		fmt.Println(":end page message")
-		valString1 := strings.Split(values, "\r\n")
-		valString2 := filterUrlStrings(valString1)
-		fmt.Println(valString1)
+		splitValues := strings.Split(values, "\r\n")
+		filterValues := filterUrlStrings(splitValues)
+		fmt.Println(splitValues)
 		fmt.Println("-------")
-		fmt.Println(valString2)
+		fmt.Println(filterValues)
 		fmt.Println("-------")
 
-		item, err := process(valString2)
+		item, err := process(filterValues)
 		if err != nil {
 			fmt.Fprintf(w, "Ошибка: '%s' со ссылкой: '%s'", err, item) // write data to response
 			return
