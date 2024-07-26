@@ -53,14 +53,13 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	fileServer := http.FileServer(http.Dir(yt_path))
-	mux.Handle(files, http.StripPrefix(files, fileServer))
-
 	mux.HandleFunc("/hello/", sayHelloName) // setting router rule
 	mux.HandleFunc("/yt/", yt)
-	// mux.HandleFunc("/process/", process)
 	mux.HandleFunc("/serve/", serve)
 
+	fileServer := http.FileServer(http.Dir(yt_path))
+	mux.Handle(files, http.StripPrefix(files, fileServer))	
+	
 	err := http.ListenAndServe(":10542", mux) // setting listening port
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
