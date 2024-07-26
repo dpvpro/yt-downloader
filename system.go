@@ -63,7 +63,7 @@ func process(arr_clips []string) (item string, error error) {
 	return "", nil
 }
 
-func files(w http.ResponseWriter, r *http.Request) {
+func serve(w http.ResponseWriter, r *http.Request) {
 
 	// list directory
 	fmt.Println("Listing", yt_path, "directory")
@@ -74,6 +74,6 @@ func files(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "audio/mpeg")
-	// http.Redirect(w, r, files, http.StatusSeeOther)
+	http.Redirect(w, r, fileurl, http.StatusSeeOther)
 
 }

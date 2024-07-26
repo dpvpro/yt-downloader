@@ -9,45 +9,10 @@ import (
 )
 
 var (
-	yt_path string = "/tmp/yt_downloader/"
-	// files   string = "/files/"
+	yt_path 	string = "/tmp/yt_downloader/"
+	fileurl   	string = "/files/"
 )
 
-// func yt(w http.ResponseWriter, r *http.Request) {
-// 	if r.Method == "GET" {
-// 		fmt.Println("method:", r.Method) //get request method
-// 		fmt.Println("url:", r.URL)       //get request method
-
-// 		html, err := template.ParseFiles("yt.html")
-// 		check(err)
-// 		err = html.Execute(w, nil)
-// 		check(err)
-// 	}
-
-// 	if r.Method == "POST" {
-// 		r.ParseForm()
-// 		// logic part of log in
-// 		var values string = r.FormValue("message")
-// 		fmt.Println("page message:")
-// 		fmt.Println(values)
-// 		fmt.Println(":end page message")
-// 		splitValues := strings.Split(values, "\r\n")
-// 		filterValues := filterUrlStrings(splitValues)
-// 		fmt.Println(splitValues)
-// 		fmt.Println("-------")
-// 		fmt.Println(filterValues)
-// 		fmt.Println("-------")
-
-// 		item, err := process(filterValues)
-// 		if err != nil {
-// 			fmt.Fprintf(w, "Ошибка: '%s' со ссылкой: '%s'", err, item) // write data to response
-// 			return
-// 		}
-
-// 		serve(w, r)
-
-// 	}
-// }
 
 func yt(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("method:", r.Method) //get request method
@@ -102,8 +67,8 @@ func download(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/files/", http.StatusFound)
-	// serve(w, r)
+	// http.Redirect(w, r, "/files/", http.StatusFound)
+	serve(w, r)
 
 }
 
@@ -114,12 +79,12 @@ func main() {
 	http.HandleFunc("/prepare/", prepare)
 	http.HandleFunc("/banner/", banner)
 	http.HandleFunc("/download/", download)
+	http.HandleFunc("/serve/", serve)
 	
-	http.Handle("/files/", 
-		http.StripPrefix("/files",
+	http.Handle(fileurl, 
+		http.StripPrefix(fileurl,
 			http.FileServer(
 				http.Dir(yt_path))))
-	// http.HandleFunc("/files/", files)
 
 
 	err := http.ListenAndServe(":10542", nil) // setting listening port
