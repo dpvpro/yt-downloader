@@ -135,7 +135,7 @@ func serve(w http.ResponseWriter, r *http.Request) {
 func main() {
 
 	http.HandleFunc("/yt/", yt)
-	http.HandleFunc("/prepare/", banner)
+	http.HandleFunc("/banner/", banner)
 	http.HandleFunc("/download/", download)
 	http.HandleFunc("/serve/", serve)
 
