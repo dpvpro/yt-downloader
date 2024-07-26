@@ -44,19 +44,15 @@ func prepare(w http.ResponseWriter, r *http.Request) {
 
 	dowloadedItems = &filterValues
 
-
-	http.Redirect(w, r, "/banner/", http.StatusFound)
+	html, err := template.ParseFiles("banner.html")
+	check(err)
+	err = html.Execute(w, nil)
+	check(err)
+	
+	// http.Redirect(w, r, "/download/", http.StatusFound)
 }
 
-func banner(w http.ResponseWriter, r *http.Request) {
 
-	// html, err := template.ParseFiles("banner.html")
-	// check(err)
-	// err = html.Execute(w, nil)
-	// check(err)
-	http.Redirect(w, r, "/download/", http.StatusFound)
-
-}
 func download(w http.ResponseWriter, r *http.Request) {
 
 
@@ -77,7 +73,7 @@ func main() {
 	http.HandleFunc("/hello/", sayHelloName)
 	http.HandleFunc("/yt/", yt)
 	http.HandleFunc("/prepare/", prepare)
-	http.HandleFunc("/banner/", banner)
+	// http.HandleFunc("/banner/", banner)
 	http.HandleFunc("/download/", download)
 	http.HandleFunc("/serve/", serve)
 	
