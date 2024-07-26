@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"strings"
 	"net/http"
+	"strings"
 )
 
 func sayHelloName(w http.ResponseWriter, r *http.Request) {
