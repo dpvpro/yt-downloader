@@ -14,8 +14,8 @@ var (
 	yt_path        string = "/tmp/yt_downloader/"
 	fileurl        string = "/mp3s/"
 	dowloadedItems *[]string
-	pwd			   string
-	err			   error
+	pwd            string
+	err            error
 )
 
 func check(e error) {
@@ -36,7 +36,6 @@ func filterUrlStrings(s []string) []string {
 }
 
 func process(arr_clips []string) (item string, error error) {
-
 
 	err = os.RemoveAll(yt_path)
 	check(err)
@@ -67,15 +66,15 @@ func process(arr_clips []string) (item string, error error) {
 
 	err = os.Chdir(pwd)
 	check(err)
-	
+
 	return "", nil
 }
 
 func yt(w http.ResponseWriter, r *http.Request) {
-	
+
 	err := os.Chdir(pwd)
 	check(err)
-	
+
 	fmt.Println("method:", r.Method) //get request method
 	fmt.Println("url:", r.URL)       //get request method
 
@@ -87,10 +86,10 @@ func yt(w http.ResponseWriter, r *http.Request) {
 }
 
 func banner(w http.ResponseWriter, r *http.Request) {
-	
+
 	err := os.Chdir(pwd)
 	check(err)
-	
+
 	r.ParseForm()
 	var values string = r.FormValue("message")
 	fmt.Println("page message:")
@@ -146,8 +145,8 @@ func main() {
 
 	pwd, err = os.Getwd()
 	check(err)
-	
-	http.HandleFunc("/yt/", yt)
+	// исходим из того что наш используется отдельный домен или поддомен
+	http.HandleFunc("/", yt)
 	http.HandleFunc("/banner/", banner)
 	http.HandleFunc("/download/", download)
 	http.HandleFunc("/serve/", serve)
@@ -158,7 +157,7 @@ func main() {
 				http.Dir(yt_path))))
 
 	http.HandleFunc("/hello/", sayHelloName)
-	
+
 	err = http.ListenAndServe(":10542", nil) // setting listening port
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
