@@ -2,7 +2,7 @@
 
 cd "$(dirname "$0")"
 
-#git pull --rebase origin main
+git pull --rebase origin main
 
 go build -o yt-downloader
 pkill yt-downloader

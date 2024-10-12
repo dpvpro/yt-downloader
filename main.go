@@ -85,7 +85,7 @@ func yt(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func banner(w http.ResponseWriter, r *http.Request) {
+func waiting(w http.ResponseWriter, r *http.Request) {
 
 	err := os.Chdir(pwd)
 	check(err)
@@ -105,7 +105,7 @@ func banner(w http.ResponseWriter, r *http.Request) {
 
 	dowloadedItems = &filterValues
 
-	html, err := template.ParseFiles("banner.html")
+	html, err := template.ParseFiles("waiting.html")
 	check(err)
 	err = html.Execute(w, nil)
 	check(err)
@@ -147,7 +147,7 @@ func main() {
 	check(err)
 	// исходим из того что наш используется отдельный домен или поддомен
 	http.HandleFunc("/", yt)
-	http.HandleFunc("/banner/", banner)
+	http.HandleFunc("/waiting/", waiting)
 	http.HandleFunc("/download/", download)
 	http.HandleFunc("/serve/", serve)
 
