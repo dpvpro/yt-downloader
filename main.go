@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 )
 
@@ -27,8 +28,9 @@ func check(e error) {
 func filterUrlStrings(s []string) []string {
 	// filter empty strings and strings that begins with http or https prefix
 	var r []string
+	regExFilter, _ := regexp.Compile("^https?")
 	for _, str := range s {
-		if str != "" && strings.HasPrefix(str, "http") || strings.HasPrefix(str, "https") {
+		if str != "" && regExFilter.MatchString(str) {
 			r = append(r, str)
 		}
 	}
