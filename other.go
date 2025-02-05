@@ -20,3 +20,9 @@ func sayHelloName(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Fprintln(w, "Hello astaxie!") // write data to response
 }
+
+func check(e error) {
+	if e != nil {
+		panic(e)
+	}
+}

@@ -19,11 +19,6 @@ var (
 	err            error
 )
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
 
 func filterUrlStrings(s []string) []string {
 	// filter empty strings and strings that begins with http or https prefix
@@ -147,7 +142,7 @@ func main() {
 
 	pwd, err = os.Getwd()
 	check(err)
-	// исходим из того что наш используется отдельный домен или поддомен
+	// исходим из того что у нас используется отдельный домен или поддомен
 	http.HandleFunc("/", yt)
 	http.HandleFunc("/waiting/", waiting)
 	http.HandleFunc("/download/", download)
