@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func sayHelloName(w http.ResponseWriter, r *http.Request) {
+func SayHelloName(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	//Parse url parameters passed, then parse the response packet for the POST body (request body)
 	// attention: If you do not call ParseForm method, the following data can not be obtained form
@@ -21,7 +21,7 @@ func sayHelloName(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Hello astaxie!") // write data to response
 }
 
-func check(e error) {
+func Check(e error) {
 	if e != nil {
 		panic(e)
 	}

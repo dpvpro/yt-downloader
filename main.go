@@ -9,18 +9,19 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+	"sync"
 )
 
 var (
-	yt_path        string = "/tmp/yt_downloader/"
-	fileurl        string = "/mp3s/"
+	ytPath         string = "/tmp/yt_downloader/"
+	fileUrl        string = "/mp3s/"
 	dowloadedItems *[]string
 	pwd            string
 	err            error
+	workerLimit    int = 2
 )
 
-
-func filterUrlStrings(s []string) []string {
+func FilterUrlStrings(s []string) []string {
 	// filter empty strings and strings that begins with http or https prefix
 	var r []string
 	regExFilter, _ := regexp.Compile("^https?")
@@ -32,60 +33,82 @@ func filterUrlStrings(s []string) []string {
 	return r
 }
 
-func process(arr_clips []string) (item string, error error) {
+func Process(arr_clips []string) (item string, error error) {
 
-	err = os.RemoveAll(yt_path)
-	check(err)
-	err = os.Mkdir(yt_path, 0755)
-	check(err)
-	err = os.Chdir(yt_path)
-	check(err)
+	err = os.RemoveAll(ytPath)
+	Check(err)
+	err = os.Mkdir(ytPath, 0755)
+	Check(err)
+	err = os.Chdir(ytPath)
+	Check(err)
 
-	for key, value := range arr_clips { // range over []string
+	// На основе ratelim.go из курса на Степике от Василия Романова
 
-		fmt.Println("Processing ", key, value)
+	wg := &sync.WaitGroup{}
+	quotaChanel := make(chan bool, workerLimit) // ratelim.go
 
-		//yt-dlp -x --audio-format mp3 --audio-quality 0 https://youtu.be/BS5N_lAIohQ
-		cmd := exec.Command("yt-dlp", "-x", "--audio-format", "mp3", "--audio-quality", "0", value)
-		//if err := cmd.Run(); err != nil {
-		//	fmt.Println("Error: ", err)
-		//}
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			fmt.Println("Error: ", err)
-			//time.Sleep(5 * time.Second)
-			//log.Fatal(err)
-			return value, err
-		}
-		fmt.Printf("%s\n", out)
+	for index, clip := range arr_clips { // range over []string
+		wg.Add(1)
+		// go startWorker(i, wg, quotaCh)
+		go func(indexGorutine int, clipGorutine string) {
+			quotaChanel <- true // ratelim.go, берём свободный слот
+			defer wg.Done()
+			defer func() {
+				<-quotaChanel
+			}()
 
+			fmt.Println("Processing ", indexGorutine, clipGorutine)
+
+			//yt-dlp -x --audio-format mp3 --audio-quality 0 https://youtu.be/BS5N_lAIohQ
+			cmd := exec.Command("yt-dlp", "-x", "--audio-format", "mp3", "--audio-quality", "0", clipGorutine)
+			//if err := cmd.Run(); err != nil {
+			//	fmt.Println("Error: ", err)
+			//}
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				fmt.Println("Error: ", err)
+				// time.Sleep(5 * time.Second)
+				// log.Fatal(err)
+				// return value, err
+				return
+			}
+			fmt.Printf("%s\n", out)
+
+		}(index, clip)
 	}
 
+	wg.Wait()
+
+	// сформировать переменную перед циклом для ошибок и после проверять
+	// https://pkg.go.dev/errors#Join
+	// использовать мьютексы что бы использовать в разных горутинах общую
+	// переменную которую я сформировал выше
+
 	err = os.Chdir(pwd)
-	check(err)
+	Check(err)
 
 	return "", nil
 }
 
-func yt(w http.ResponseWriter, r *http.Request) {
+func Yt(w http.ResponseWriter, r *http.Request) {
 
 	err := os.Chdir(pwd)
-	check(err)
+	Check(err)
 
 	fmt.Println("method:", r.Method) //get request method
 	fmt.Println("url:", r.URL)       //get request method
 
 	html, err := template.ParseFiles("yt.html")
-	check(err)
+	Check(err)
 	err = html.Execute(w, nil)
-	check(err)
+	Check(err)
 
 }
 
-func waiting(w http.ResponseWriter, r *http.Request) {
+func Waiting(w http.ResponseWriter, r *http.Request) {
 
 	err := os.Chdir(pwd)
-	check(err)
+	Check(err)
 
 	r.ParseForm()
 	var values string = r.FormValue("message")
@@ -93,7 +116,7 @@ func waiting(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(values)
 	fmt.Println(":end page message")
 	splitValues := strings.Split(values, "\r\n")
-	filterValues := filterUrlStrings(splitValues)
+	filterValues := FilterUrlStrings(splitValues)
 	fmt.Println("-------")
 	fmt.Println(splitValues)
 	fmt.Println("-------")
@@ -103,16 +126,16 @@ func waiting(w http.ResponseWriter, r *http.Request) {
 	dowloadedItems = &filterValues
 
 	html, err := template.ParseFiles("waiting.html")
-	check(err)
+	Check(err)
 	err = html.Execute(w, nil)
-	check(err)
+	Check(err)
 
 }
 
-func download(w http.ResponseWriter, r *http.Request) {
+func Download(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(*dowloadedItems)
-	item, err := process(*dowloadedItems)
+	item, err := Process(*dowloadedItems)
 	if err != nil {
 		fmt.Fprintf(w, "Ошибка: '%s' со ссылкой: '%s'", err, item) // write data to response
 		return
@@ -122,38 +145,38 @@ func download(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func serve(w http.ResponseWriter, r *http.Request) {
+func Serve(w http.ResponseWriter, r *http.Request) {
 
 	// list directory
-	fmt.Println("Listing", yt_path, "directory")
-	c, err := os.ReadDir(yt_path)
-	check(err)
+	fmt.Println("Listing", ytPath, "directory")
+	c, err := os.ReadDir(ytPath)
+	Check(err)
 	for _, entry := range c {
 		fmt.Println(" ", entry.Name(), entry.IsDir())
 	}
 
 	// redirect to directory listing
 	w.Header().Set("Content-Type", "audio/mpeg")
-	http.Redirect(w, r, fileurl, http.StatusSeeOther)
+	http.Redirect(w, r, fileUrl, http.StatusSeeOther)
 
 }
 
 func main() {
 
 	pwd, err = os.Getwd()
-	check(err)
+	Check(err)
 	// исходим из того что у нас используется отдельный домен или поддомен
-	http.HandleFunc("/", yt)
-	http.HandleFunc("/waiting/", waiting)
-	http.HandleFunc("/download/", download)
-	http.HandleFunc("/serve/", serve)
+	http.HandleFunc("/", Yt)
+	http.HandleFunc("/waiting/", Waiting)
+	http.HandleFunc("/download/", Download)
+	http.HandleFunc("/serve/", Serve)
 
-	http.Handle(fileurl,
-		http.StripPrefix(fileurl,
+	http.Handle(fileUrl,
+		http.StripPrefix(fileUrl,
 			http.FileServer(
-				http.Dir(yt_path))))
+				http.Dir(ytPath))))
 
-	http.HandleFunc("/hello/", sayHelloName)
+	http.HandleFunc("/hello/", SayHelloName)
 
 	err = http.ListenAndServe(":10542", nil) // setting listening port
 	if err != nil {
