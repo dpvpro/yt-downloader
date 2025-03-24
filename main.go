@@ -15,7 +15,7 @@ import (
 var (
 	ytPath         string = "/tmp/yt_downloader/"
 	fileUrl        string = "/mp3s/"
-	dowloadedItems *[]string
+	dowloadedItems []string
 	pwd            string
 	err            error
 	workerLimit    int = 2
@@ -123,7 +123,7 @@ func Waiting(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(filterValues)
 	fmt.Println("-------")
 
-	dowloadedItems = &filterValues
+	dowloadedItems = filterValues
 
 	html, err := template.ParseFiles("waiting.html")
 	Check(err)
@@ -134,8 +134,8 @@ func Waiting(w http.ResponseWriter, r *http.Request) {
 
 func Download(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Println(*dowloadedItems)
-	item, err := Process(*dowloadedItems)
+	fmt.Println(dowloadedItems)
+	item, err := Process(dowloadedItems)
 	if err != nil {
 		fmt.Fprintf(w, "Ошибка: '%s' со ссылкой: '%s'", err, item) // write data to response
 		return
