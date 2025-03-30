@@ -1,15 +1,17 @@
 package handlers
 
 import (
-	"net/http"
-	"time"
 	"crypto/rand"
 	"fmt"
+	"net/http"
+	"regexp"
 	"strings"
+	"time"
 
-	"github.com/labstack/echo/v4"
 	"yt-downloader/models"
 	"yt-downloader/services"
+
+	"github.com/labstack/echo/v4"
 )
 
 type Handler struct {
@@ -32,33 +34,33 @@ func (h *Handler) IndexHandler(c echo.Context) error {
 
 func (h *Handler) SubmitHandler(c echo.Context) error {
 	urls := c.FormValue("urls")
+	if urls == "" {
+		return c.String(http.StatusBadRequest, "No urls provided")
+	}
 	useProxy := c.FormValue("use_proxy") == "on"
 	proxyURL := c.FormValue("proxy_url")
 
 	// Генерация уникального ID для запроса
 	id := generateID()
 
+
 	// Разбиваем текстовое поле на отдельные URLs
-	urlList := strings.Split(urls, "\n")
-	cleanURLs := []string{}
+	cleanUrls := flterUrlStrings(urls)
 	videos := []models.VideoInfo{}
 
-	for _, url := range urlList {
+	for _, url := range cleanUrls {
 		url = strings.TrimSpace(url)
-		if url != "" {
-			cleanURLs = append(cleanURLs, url)
-			videos = append(videos, models.VideoInfo{
-				URL:       url,
-				Status:    models.StatusPending,
-				CreatedAt: time.Now(),
-			})
-		}
+		videos = append(videos, models.VideoInfo{
+			URL:       url,
+			Status:    models.StatusPending,
+			CreatedAt: time.Now(),
+		})
 	}
 
 	// Создаем запрос на скачивание
 	request := &models.DownloadRequest{
 		ID:        id,
-		URLs:      cleanURLs,
+		URLs:      cleanUrls,
 		Videos:    videos,
 		UseProxy:  useProxy,
 		ProxyURL:  proxyURL,
@@ -124,4 +126,19 @@ func generateID() string {
 	b := make([]byte, 16)
 	rand.Read(b)
 	return fmt.Sprintf("%x", b)
+}
+
+func flterUrlStrings(s string) []string {
+	// filter empty strings and strings that begins with http or https prefix
+	var r []string
+	
+	urlList := strings.Split(s, "\n")
+	
+	regExFilter, _ := regexp.Compile("^https?")
+	for _, str := range urlList {
+		if str != "" && regExFilter.MatchString(str) {
+			r = append(r, str)
+		}
+	}
+	return r
 }
