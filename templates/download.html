@@ -12,8 +12,7 @@
         <div class="downloads-list">
             {{range .Videos}}
             <div class="download-item">
-                <div class="title">{{.Title}}</div>
-                <a href="/downloads/{{.FileName}}" class="download-button" download>Скачать MP3</a>
+                <a href="/downloads/{{.FileName}}" download>{{.FileName}}</a>
             </div>
             {{end}}
         </div>
