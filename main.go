@@ -36,7 +36,7 @@ func main() {
 	e.Use(middleware.Recover())
 
 	// Статические файлы
-	e.Static("/public", "public")
+	e.Static("/templates", "templates")
 	e.Static("/downloads", "downloads")
 
 	// Инициализация обработчиков
