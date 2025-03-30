@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Status</title>
+    <link rel="stylesheet" href="/public/css/styles.css">
+    <meta http-equiv="refresh" content="5;url=/status/{{.ID}}" {{if .AllCompleted}}disabled{{end}}>
+</head>
+<body>
+    <div class="container">
+        <h1>Статус скачивания</h1>
+        <div class="status-container">
+            {{range .Videos}}
+            <div class="video-status {{.Status}}">
+                <div class="url">{{.URL}}</div>
+                <div class="status-info">
+                    <span class="status-label">Статус:</span> 
+                    <span class="status-value">
+                        {{if eq .Status "pending"}}Ожидание{{end}}
+                        {{if eq .Status "downloading"}}Скачивание{{end}}
+                        {{if eq .Status "converting"}}Конвертирование{{end}}
+                        {{if eq .Status "completed"}}Завершено{{end}}
+                        {{if eq .Status "failed"}}Ошибка{{end}}
+                    </span>
+                </div>
+                {{if .Error}}
+                <div class="error-message">
+                    Ошибка: {{.Error}}
+                </div>
+                {{end}}
+            </div>
+            {{end}}
+        </div>
+        
+        {{if .AllCompleted}}
+        <div class="navigation">
+            <a href="/download/{{.ID}}" class="button">Перейти к загрузке файлов</a>
+        </div>
+        {{else}}
+        <div class="loading">
+            <p>Подождите, процесс может занять некоторое время...</p>
+            <div class="spinner"></div>
+        </div>
+        {{end}}
+        
+        <div class="navigation">
+            <a href="/" class="button secondary">Вернуться на главную</a>
+        </div>
+    </div>
+</body>
+</html>

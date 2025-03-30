@@ -1,0 +1,31 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download MP3 Files</title>
+    <link rel="stylesheet" href="/public/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Скачать MP3 файлы</h1>
+        {{if .Videos}}
+        <div class="downloads-list">
+            {{range .Videos}}
+            <div class="download-item">
+                <div class="title">{{.Title}}</div>
+                <a href="/downloads/{{.FileName}}" class="download-button" download>Скачать MP3</a>
+            </div>
+            {{end}}
+        </div>
+        {{else}}
+        <div class="no-downloads">
+            <p>Нет доступных файлов для скачивания.</p>
+        </div>
+        {{end}}
+        
+        <div class="navigation">
+            <a href="/" class="button">Вернуться на главную</a>
+        </div>
+    </div>
+</body>
+</html>
