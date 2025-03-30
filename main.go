@@ -15,7 +15,7 @@ type Template struct {
 	templates *template.Template
 }
 
-func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+func (t *Template) Render(w io.Writer, name string, data any, c echo.Context) error {
 	return t.templates.ExecuteTemplate(w, name, data)
 }
 
@@ -49,6 +49,6 @@ func main() {
 	e.GET("/download/:id", h.DownloadHandler)
 
 	// Запуск сервера
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":10542"))
 }
 
