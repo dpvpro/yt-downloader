@@ -1,10 +1,11 @@
-# Yt-downloader
+### Yt-downloader
 
-Скачиватель музыки в формате mp3 из Youtube. Сейчас уже не работает. Эх... жаль.
+Скачиватель музыки в формате mp3 из Youtube. Веб инфтерфейс для [yt-dlp](https://github.com/yt-dlp/yt-dlp).
 
-Веб инфтерфейс для [yt-dlp](https://github.com/yt-dlp/yt-dlp)
+Сейчас уже не работает. Требуется добавить поддержку прокси серверов для возобновления работы.
 
-# Nginx
+
+### Nginx
 
 Настройки сервера nginx для отдельного домена
 
@@ -42,15 +43,4 @@ server {
 
 }
 
-#server {
-#    if ($host = yt.daybydayz.ru) {
-#        return 301 https://$host$request_uri;
-#    } # managed by Certbot
-
-
-#     server_name yt.daybydayz.ru;
-#     listen 80;
-#     return 404; # managed by Certbot
-
-#}
 ```
