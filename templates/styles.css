@@ -57,6 +57,7 @@ button, .button {
     text-decoration: none;
     display: inline-block;
     text-align: center;
+    width: 100%;
 }
 
 button:hover, .button:hover {
