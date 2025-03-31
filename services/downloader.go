@@ -71,6 +71,7 @@ func (d *Downloader) getVideoTitle(url string, useProxy bool, proxyURL string) (
 
 func (d *Downloader) downloadAudio(url string, outputPath string, useProxy bool, proxyURL string) error {
 	args := []string{
+		"--force-ipv6",
 		"--extract-audio",
 		"--audio-format", "mp3",
 		"--audio-quality", "0",
