@@ -31,13 +31,6 @@ func main() {
 	// создаем директорию для загрузок, если ее нет
 	os.MkdirAll("downloads", os.ModePerm)
 
-
-	
-	// CookieSettings, err := os.ReadFile("env/cookie.txt")
-	// if err != nil {
-	// 	e.Logger.Fatal("error opening file: %v", err)
-	// }
-	
 	// middleware
 
 	// create log file

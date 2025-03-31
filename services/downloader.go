@@ -58,6 +58,7 @@ func (d *Downloader) getVideoTitle(url string, useProxy bool, proxyURL string) (
 
 	if useProxy && proxyURL != "" {
 		args = append(args, "--proxy", proxyURL)
+		args = append(args, "--cookies", "env/cookies.txt")
 	}
 
 	cmd := exec.Command("yt-dlp", args...)
@@ -71,7 +72,6 @@ func (d *Downloader) getVideoTitle(url string, useProxy bool, proxyURL string) (
 
 func (d *Downloader) downloadAudio(url string, outputPath string, useProxy bool, proxyURL string) error {
 	args := []string{
-		"--force-ipv6",
 		"--extract-audio",
 		"--audio-format", "mp3",
 		"--audio-quality", "0",
@@ -81,9 +81,12 @@ func (d *Downloader) downloadAudio(url string, outputPath string, useProxy bool,
 
 	if useProxy && proxyURL != "" {
 		args = append(args, "--proxy", proxyURL)
+		args = append(args, "--cookies", "env/cookies.txt")
+		
 	}
 
 	cmd := exec.Command("yt-dlp", args...)
+	fmt.Println(cmd.String())
 	return cmd.Run()
 }
 
