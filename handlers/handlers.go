@@ -93,7 +93,7 @@ func (h *Handler) StatusHandler(c echo.Context) error {
 		}
 	}
 
-	return c.Render(http.StatusOK, "status.html", map[string]interface{}{
+	return c.Render(http.StatusOK, "status.html", map[string]any{
 		"ID":           id,
 		"Videos":       request.Videos,
 		"AllCompleted": allCompleted,
@@ -115,7 +115,7 @@ func (h *Handler) DownloadHandler(c echo.Context) error {
 		}
 	}
 
-	return c.Render(http.StatusOK, "download.html", map[string]interface{}{
+	return c.Render(http.StatusOK, "download.html", map[string]any{
 		"ID":     id,
 		"Videos": completedVideos,
 	})
@@ -128,8 +128,8 @@ func generateID() string {
 	return fmt.Sprintf("%x", b)
 }
 
+// filter empty strings and strings that begins with http or https prefix
 func flterUrlStrings(s string) []string {
-	// filter empty strings and strings that begins with http or https prefix
 	var r []string
 	
 	urlList := strings.Split(s, "\n")
