@@ -32,7 +32,20 @@ func main() {
 	e.Renderer = t
 
 	// Middleware
-	e.Use(middleware.Logger())
+
+	logFile, err := os.OpenFile("logfile", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		e.Logger.Fatal("error opening file: %v", err)
+	}
+	defer logFile.Close()
+	
+	// output in log file
+	e.Use(middleware.LoggerWithConfig(
+			middleware.LoggerConfig{Output: logFile},
+	))
+	
+	// output in console
+	// e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
 	// Статические файлы
