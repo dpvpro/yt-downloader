@@ -4,8 +4,10 @@ import (
 	"crypto/rand"
 	"fmt"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	"yt-downloader/models"
@@ -13,6 +15,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 )
+
+var once sync.Once
 
 type Handler struct {
 	store     *models.DownloadStore
@@ -38,9 +42,9 @@ func (h *Handler) SubmitHandler(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "No urls provided")
 	}
 	useProxy := c.FormValue("use_proxy") == "on"
-	proxyURL := c.FormValue("proxy_url")
+	proxyURL := ProxySettings()
 
-	// Генерация уникального ID для запроса
+	// генерация уникального ID для запроса
 	id := generateID()
 
 
@@ -141,4 +145,19 @@ func flterUrlStrings(s string) []string {
 		}
 	}
 	return r
+}
+
+
+func ProxySettings() string {
+	var ProxySettings []byte
+	var err error
+	
+	once.Do(func() {
+		ProxySettings, err = os.ReadFile("env/proxy.txt")
+	})
+	if err != nil {
+		return ""
+	}
+	return string(ProxySettings)
+	
 }

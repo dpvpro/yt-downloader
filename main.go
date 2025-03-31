@@ -20,19 +20,27 @@ func (t *Template) Render(w io.Writer, name string, data any, c echo.Context) er
 }
 
 func main() {
-	// Создаем директорию для загрузок, если ее нет
-	os.MkdirAll("downloads", os.ModePerm)
-
 	e := echo.New()
 
-	// Настройка шаблонизатора
+	// настройка шаблонизатора
 	t := &Template{
 		templates: template.Must(template.ParseGlob("templates/*.html")),
 	}
 	e.Renderer = t
+	
+	// создаем директорию для загрузок, если ее нет
+	os.MkdirAll("downloads", os.ModePerm)
 
-	// Middleware
 
+	
+	// CookieSettings, err := os.ReadFile("env/cookie.txt")
+	// if err != nil {
+	// 	e.Logger.Fatal("error opening file: %v", err)
+	// }
+	
+	// middleware
+
+	// create log file
 	logFile, err := os.OpenFile("logfile", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		e.Logger.Fatal("error opening file: %v", err)
