@@ -86,7 +86,7 @@ func (d *Downloader) downloadAudio(url string, outputPath string, useProxy bool,
 	}
 
 	cmd := exec.Command("yt-dlp", args...)
-	fmt.Println(cmd.String())
+	// fmt.Println(cmd.String())
 	return cmd.Run()
 }
 
