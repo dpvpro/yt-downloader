@@ -21,31 +21,31 @@ func NewDownloader(store *models.DownloadStore) *Downloader {
 
 func (d *Downloader) ProcessRequest(request *models.DownloadRequest) {
 	for _, video := range request.Videos {
-		// Обновляем статус на "скачивание"
+		// обновляем статус на "скачивание"
 		d.store.UpdateVideoStatus(request.ID, video.URL, models.StatusDownloading, "", "")
 
-		// Получаем информацию о видео
+		// получаем информацию о видео
 		title, err := d.getVideoTitle(video.URL, request.UseProxy, request.ProxyURL)
 		if err != nil {
-			d.store.UpdateVideoStatus(request.ID, video.URL, models.StatusFailed, 
+			d.store.UpdateVideoStatus(request.ID, video.URL, models.StatusFailed,
 				fmt.Sprintf("Error getting video title: %v", err), "")
 			continue
 		}
 
-		// Формируем безопасное имя файла
+		// формируем безопасное имя файла
 		safeTitle := sanitizeFilename(title)
 		fileName := safeTitle + ".mp3"
 		filePath := filepath.Join("downloads", fileName)
 
-		// Скачиваем аудио
+		// скачиваем аудио
 		err = d.downloadAudio(video.URL, filePath, request.UseProxy, request.ProxyURL)
 		if err != nil {
-			d.store.UpdateVideoStatus(request.ID, video.URL, models.StatusFailed, 
+			d.store.UpdateVideoStatus(request.ID, video.URL, models.StatusFailed,
 				fmt.Sprintf("Error downloading audio: %v", err), "")
 			continue
 		}
 
-		// Обновляем информацию о видео
+		// обновляем информацию о видео
 		d.store.UpdateVideoStatus(request.ID, video.URL, models.StatusCompleted, "", fileName)
 	}
 }
@@ -82,7 +82,7 @@ func (d *Downloader) downloadAudio(url string, outputPath string, useProxy bool,
 	if useProxy && proxyURL != "" {
 		args = append(args, "--proxy", proxyURL)
 		args = append(args, "--cookies", "env/cookies.txt")
-		
+
 	}
 
 	cmd := exec.Command("yt-dlp", args...)
@@ -91,7 +91,7 @@ func (d *Downloader) downloadAudio(url string, outputPath string, useProxy bool,
 }
 
 func sanitizeFilename(name string) string {
-	// Заменяем недопустимые символы в имени файла
+	// заменяем недопустимые символы в имени файла
 	forbidden := []string{"/", "\\", ":", "*", "?", "\"", "<", ">", "|"}
 	result := name
 
@@ -99,7 +99,7 @@ func sanitizeFilename(name string) string {
 		result = strings.ReplaceAll(result, char, "_")
 	}
 
-	// Ограничиваем длину имени файла
+	// ограничиваем длину имени файла
 	if len(result) > 200 {
 		result = result[:200]
 	}

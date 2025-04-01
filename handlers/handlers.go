@@ -48,7 +48,7 @@ func (h *Handler) SubmitHandler(c echo.Context) error {
 	id := generateID()
 
 
-	// Разбиваем текстовое поле на отдельные URLs
+	// разбиваем текстовое поле на отдельные URLs
 	cleanUrls := flterUrlStrings(urls)
 	videos := []models.VideoInfo{}
 
@@ -61,7 +61,7 @@ func (h *Handler) SubmitHandler(c echo.Context) error {
 		})
 	}
 
-	// Создаем запрос на скачивание
+	// создаем запрос на скачивание
 	request := &models.DownloadRequest{
 		ID:        id,
 		URLs:      cleanUrls,
@@ -71,13 +71,13 @@ func (h *Handler) SubmitHandler(c echo.Context) error {
 		CreatedAt: time.Now(),
 	}
 
-	// Сохраняем запрос
+	// сохраняем запрос
 	h.store.Add(request)
 
-	// Запускаем процесс скачивания в фоне
+	// запускаем процесс скачивания в фоне
 	go h.downloader.ProcessRequest(request)
 
-	// Перенаправляем на страницу статуса
+	// перенаправляем на страницу статуса
 	return c.Redirect(http.StatusSeeOther, "/status/"+id)
 }
 
@@ -125,7 +125,7 @@ func (h *Handler) DownloadHandler(c echo.Context) error {
 	})
 }
 
-// Генерация уникального ID
+// генерация уникального ID
 func generateID() string {
 	b := make([]byte, 16)
 	rand.Read(b)
@@ -135,9 +135,9 @@ func generateID() string {
 // filter empty strings and strings that begins with http or https prefix
 func flterUrlStrings(s string) []string {
 	var r []string
-	
+
 	urlList := strings.Split(s, "\n")
-	
+
 	regExFilter, _ := regexp.Compile("^https?")
 	for _, str := range urlList {
 		if str != "" && regExFilter.MatchString(str) {
@@ -151,7 +151,7 @@ func flterUrlStrings(s string) []string {
 func ProxySettings() string {
 	var ProxySettings []byte
 	var err error
-	
+
 	once.Do(func() {
 		ProxySettings, err = os.ReadFile("env/proxy.txt")
 	})
@@ -159,5 +159,5 @@ func ProxySettings() string {
 		return ""
 	}
 	return string(ProxySettings)
-	
+
 }

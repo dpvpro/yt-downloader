@@ -27,7 +27,7 @@ func main() {
 		templates: template.Must(template.ParseGlob("templates/*.html")),
 	}
 	e.Renderer = t
-	
+
 	// создаем директорию для загрузок, если ее нет
 	os.MkdirAll("downloads", os.ModePerm)
 
@@ -39,12 +39,12 @@ func main() {
 		e.Logger.Fatal("error opening file: %v", err)
 	}
 	defer logFile.Close()
-	
+
 	// output in log file
 	e.Use(middleware.LoggerWithConfig(
-			middleware.LoggerConfig{Output: logFile},
+		middleware.LoggerConfig{Output: logFile},
 	))
-	
+
 	// output in console
 	// e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
@@ -65,4 +65,3 @@ func main() {
 	// Запуск сервера
 	e.Logger.Fatal(e.Start(":10542"))
 }
-
