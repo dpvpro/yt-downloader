@@ -1,6 +1,6 @@
 module yt-downloader
 
-go 1.22.0
+go 1.24.0
 
 require github.com/labstack/echo/v4 v4.13.3
 
