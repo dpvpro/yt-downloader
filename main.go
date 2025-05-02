@@ -63,5 +63,5 @@ func main() {
 	e.GET("/download/:id", h.DownloadHandler)
 
 	// Запуск сервера
-	e.Logger.Fatal(e.Start(":10542"))
+	e.Logger.Fatal(e.Start("localhost:10542"))
 }
