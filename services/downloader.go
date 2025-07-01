@@ -64,6 +64,7 @@ func (d *Downloader) getVideoTitle(url string, useProxy bool, proxyURL string) (
 	cmd := exec.Command("yt-dlp", args...)
 	output, err := cmd.Output()
 	if err != nil {
+		fmt.Println(string(output))
 		return "", err
 	}
 

@@ -7,4 +7,5 @@ cd "$(dirname "$0")" || exit 1
 go build -o yt-downloader
 pkill yt-downloader
 sleep 1
-./yt-downloader & disown
+./yt-downloader &
+disown
