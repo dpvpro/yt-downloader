@@ -32,11 +32,11 @@ func NewHandler() *Handler {
 	}
 }
 
-func (h *Handler) IndexHandler(c echo.Context) error {
+func (vh *Handler) IndexHandler(c echo.Context) error {
 	return c.Render(http.StatusOK, "index.html", nil)
 }
 
-func (h *Handler) SubmitHandler(c echo.Context) error {
+func (vh *Handler) SubmitHandler(c echo.Context) error {
 	urls := c.FormValue("urls")
 	if urls == "" {
 		return c.String(http.StatusBadRequest, "No urls provided")
@@ -72,18 +72,18 @@ func (h *Handler) SubmitHandler(c echo.Context) error {
 	}
 
 	// сохраняем запрос
-	h.store.Add(request)
+	vh.store.Add(request)
 
 	// запускаем процесс скачивания в фоне
-	go h.downloader.ProcessRequest(request)
+	go vh.downloader.ProcessRequest(request)
 
 	// перенаправляем на страницу статуса
 	return c.Redirect(http.StatusSeeOther, "/status/"+id)
 }
 
-func (h *Handler) StatusHandler(c echo.Context) error {
+func (vh *Handler) StatusHandler(c echo.Context) error {
 	id := c.Param("id")
-	request, ok := h.store.Get(id)
+	request, ok := vh.store.Get(id)
 	if !ok {
 		return c.String(http.StatusNotFound, "Download request not found")
 	}
@@ -104,9 +104,9 @@ func (h *Handler) StatusHandler(c echo.Context) error {
 	})
 }
 
-func (h *Handler) DownloadHandler(c echo.Context) error {
+func (vh *Handler) DownloadHandler(c echo.Context) error {
 	id := c.Param("id")
-	request, ok := h.store.Get(id)
+	request, ok := vh.store.Get(id)
 	if !ok {
 		return c.String(http.StatusNotFound, "Download request not found")
 	}
@@ -149,7 +149,8 @@ func flterUrlStrings(s string) []string {
 
 
 func ProxySettings() string {
-	var ProxySettings []byte
+
+    var ProxySettings []byte
 	var err error
 
 	once.Do(func() {
