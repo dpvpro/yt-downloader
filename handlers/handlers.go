@@ -41,7 +41,7 @@ func (h *Handler) SubmitHandler(c echo.Context) error {
 	if urls == "" {
 		return c.String(http.StatusBadRequest, "No urls provided")
 	}
-	useProxy := c.FormValue("use_proxy") == "on"
+	useProxy := c.FormValue("use_proxy") == "off"
 	proxyURL := ProxySettings()
 
 	// генерация уникального ID для запроса
